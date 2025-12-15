@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import dayjs from "dayjs";
 
 // Connect to backend
-const socket = io("http://localhost:5000");
+const socket = io("https://studentdriverbackend-3.onrender.com");
 
 export default function GroupChat({ name, rollno, role }) {
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -101,3 +101,4 @@ export default function GroupChat({ name, rollno, role }) {
     </div>
   );
 }
+
