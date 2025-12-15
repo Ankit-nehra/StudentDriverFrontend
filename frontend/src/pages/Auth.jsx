@@ -52,7 +52,7 @@ export default function Auth() {
         }
       }
 
-      const endpoint = `http://localhost:5000/api/${role}/${isLogin ? "login" : "signup"}`;
+      const endpoint = `https://studentdriverbackend-3.onrender.com/api/${role}/${isLogin ? "login" : "signup"}`;
       const res = await axios.post(endpoint, data);
 
       alert(res.data.message);
@@ -176,3 +176,4 @@ export default function Auth() {
     </div>
   );
 }
+
