@@ -9,6 +9,7 @@ export default function DriverDashboard() {
   const { name, vehicleNo, location: driverLocation } = location.state || {};
 
   const [onlineDrivers, setOnlineDrivers] = useState([]);
+  const [studentNotifications, setStudentNotifications] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
 
   // Mobile toggle states
@@ -34,8 +35,14 @@ export default function DriverDashboard() {
 
     socket.on("onlineDrivers", setOnlineDrivers);
 
+    // Listen to student notifications
+    socket.on("bookAuto", (student) => {
+      setStudentNotifications((prev) => [student, ...prev]);
+    });
+
     return () => {
       socket.off("onlineDrivers");
+      socket.off("bookAuto");
     };
   }, [name, vehicleNo, driverLocation, navigate]);
 
@@ -80,7 +87,7 @@ export default function DriverDashboard() {
       </div>
 
       {/* Driver Info (Desktop) */}
-      <div className="hidden md:block max-w-7xl mx-auto bg-white dark:bg-gray-800 shadow rounded-2xl p-6 mb-6">
+      <div className="hidden md:block max-w-7xl mx-auto bg-white dark:bg-gray-800 shadow rounded-2xl p-6 mb-4">
         <h2 className="text-lg font-semibold mb-4">Driver Information</h2>
         <div className="grid md:grid-cols-3 gap-4 text-sm">
           <p><strong>Name:</strong> {name}</p>
@@ -88,6 +95,20 @@ export default function DriverDashboard() {
           <p><strong>Location:</strong> {driverLocation}</p>
         </div>
       </div>
+
+      {/* Student Notifications (Desktop) */}
+      {!isMobile && studentNotifications.length > 0 && (
+        <div className="max-w-7xl mx-auto bg-yellow-50 dark:bg-yellow-800 border-l-4 border-yellow-400 dark:border-yellow-600 shadow rounded-2xl p-4 mb-6">
+          <h3 className="font-semibold mb-2">Student Book Requests:</h3>
+          <ul className="space-y-2">
+            {studentNotifications.map((s, idx) => (
+              <li key={idx} className="text-sm">
+                📣 {s.name} ({s.rollno}) requested an auto
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Chat Section */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -133,6 +154,20 @@ export default function DriverDashboard() {
 
         {/* Group Chat */}
         <div className="md:col-span-3 h-[550px]">
+          {/* Student Notifications (Mobile) */}
+          {isMobile && studentNotifications.length > 0 && (
+            <div className="bg-yellow-50 dark:bg-yellow-800 border-l-4 border-yellow-400 dark:border-yellow-600 shadow rounded-2xl p-4 mb-4">
+              <h3 className="font-semibold mb-2">Student Book Requests:</h3>
+              <ul className="space-y-2">
+                {studentNotifications.map((s, idx) => (
+                  <li key={idx} className="text-sm">
+                    📣 {s.name} ({s.rollno}) requested an auto
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <GroupChat name={name} rollno={vehicleNo} role="driver" />
         </div>
 
