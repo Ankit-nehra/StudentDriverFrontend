@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import GroupChat from "../Component/GroupChat";
 import socket from "../utils/socket";
-import { setTheme } from "../utils/theme";
+import { setTheme } from "../utils/theme"; 
 
 export default function StudentDashboard() {
   const location = useLocation();
@@ -213,3 +213,4 @@ export default function StudentDashboard() {
     </div>
   );
 }
+
