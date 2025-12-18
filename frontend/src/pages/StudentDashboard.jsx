@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import GroupChat from "../Component/GroupChat";
 import socket from "../utils/socket";
-import { setTheme } from "../utils/theme"; 
+import { setTheme } from "../utils/theme";
 
 export default function StudentDashboard() {
   const location = useLocation();
@@ -51,6 +51,23 @@ export default function StudentDashboard() {
     navigate("/");
   };
 
+ const handleBookAuto = () => {
+  console.log("Book Auto button clicked!");
+  if (!socket.connected) {
+    socket.connect();
+    socket.on("connect", () => {
+      console.log("Socket connected, emitting bookAuto");
+      socket.emit("bookAuto", { name, rollno });
+      alert("Auto booking request sent to drivers!");
+    });
+  } else {
+    console.log("Socket already connected, emitting bookAuto");
+    socket.emit("bookAuto", { name, rollno });
+    alert("Auto booking request sent to drivers!");
+  }
+};
+
+
   const isMobile = window.innerWidth < 768;
 
   return (
@@ -81,13 +98,28 @@ export default function StudentDashboard() {
       </div>
 
       {/* Student Info (Desktop) */}
-      <div className="hidden md:block max-w-7xl mx-auto bg-white dark:bg-gray-800 shadow rounded-2xl p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-3">Student Information</h2>
-        <div className="grid md:grid-cols-3 gap-4 text-sm">
-          <p><strong>Name:</strong> {name}</p>
-          <p><strong>University_ID:</strong> {rollno}</p>
-          <p><strong>Course:</strong> {course}</p>
+      <div className="hidden md:flex max-w-7xl mx-auto bg-white dark:bg-gray-800 shadow rounded-2xl p-6 mb-6 justify-between items-center">
+        <div>
+          <h2 className="text-lg font-semibold mb-3">Student Information</h2>
+          <div className="grid md:grid-cols-3 gap-4 text-sm">
+            <p><strong>Name:</strong> {name}</p>
+            <p><strong>University_ID:</strong> {rollno}</p>
+            <p><strong>Course:</strong> {course}</p>
+          </div>
         </div>
+
+        {/* Book Auto Button (Desktop) */}
+        {/* Book Auto Button */}
+<div className="mt-4">
+  <button
+  onClick={handleBookAuto}
+  className="px-4 py-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition"
+>
+  Book Auto
+</button>
+
+</div>
+
       </div>
 
       {/* Chat Section */}
@@ -99,12 +131,11 @@ export default function StudentDashboard() {
           style={{
             height: isMobile
               ? onlineStudentsOpen
-                ? "550px" // expanded height
-                : "50px" // collapsed height
-              : "550px", // desktop/laptop height
+                ? "550px"
+                : "50px"
+              : "550px",
           }}
         >
-          {/* Mobile: toggle header */}
           <h3
             className="text-lg font-semibold mb-4 md:mb-4 flex justify-between items-center cursor-pointer md:cursor-auto"
             onClick={() => isMobile && setOnlineStudentsOpen(!onlineStudentsOpen)}
@@ -113,7 +144,6 @@ export default function StudentDashboard() {
             {isMobile && <span>{onlineStudentsOpen ? "▲" : "▼"}</span>}
           </h3>
 
-          {/* List */}
           <ul className={`space-y-4 overflow-y-auto ${isMobile && !onlineStudentsOpen ? "hidden" : "block"}`}>
             {onlineStudents.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -136,6 +166,21 @@ export default function StudentDashboard() {
 
         {/* Group Chat */}
         <div className="md:col-span-3 h-[550px]">
+
+          {/* Book Auto Button (Mobile) */}
+          {isMobile && (
+            <div className="text-center mb-4">
+<button
+  onClick={handleBookAuto}
+  className="px-4 py-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition"
+>
+  Book Auto
+</button>
+
+
+            </div>
+          )}
+
           <GroupChat name={name} rollno={rollno} role="student" />
         </div>
 
@@ -178,8 +223,8 @@ export default function StudentDashboard() {
         style={{
           height: isMobile
             ? onlineDriversOpen
-              ? "auto" // expand to full content
-              : "50px" // collapsed height
+              ? "auto"
+              : "50px"
             : "auto",
         }}
       >
@@ -213,5 +258,3 @@ export default function StudentDashboard() {
     </div>
   );
 }
-
-
